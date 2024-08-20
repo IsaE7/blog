@@ -1,0 +1,7 @@
+{% extends "template.html" %}
+{% block content %}
+<form style="padding: 30px" action="" method="post" enctype="multipart/form-data">
+    {%csrf_token%}
+    {{form.as_p}}
+</form>
+{% endblock %}
