@@ -9,9 +9,16 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from posts.forms import PostForm, SearchForm
-from posts.models import Post
+from posts.forms import PostForm, SearchForm, PostUpdateForm, CommentForm
+from posts.models import Post, Comment
+from django.views import View
+from django.views.generic import ListView, DetailView,CreateView
 import random
+
+
+class TestView(View):
+    def get(self, request):
+        return HttpResponse(f'hello world {random.randint(0, 100)}')
 
 
 def text_response(request):
@@ -54,11 +61,34 @@ def post_list_view(request):
         return render(request, 'posts/post_list.html', context=context)
 
 
+class PostListView(ListView):
+    model = Post
+    template_name = 'posts/post_list.html'
+    context_object_name = 'posts'
+    form_class = SearchForm
+
+
 @login_required(login_url='login')
 def post_detail_view(request, post_id):
     if request.method == "GET":
         post = Post.objects.get(id=post_id)
-        return render(request, 'posts/post_detail.html', context={'post': post})
+        comments = post.comments.all()
+        comment_form = CommentForm()
+        return render(request, 'posts/post_detail.html', context={'post': post, 'comment_form': comment_form, 'comments': comments})
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'posts/post_detail.html', context={'form': form, 'comment_form': form})
+        Comment.objects.create(text=form.cleaned_data.get('text'), post_id=post_id)
+        return redirect('/posts/')
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'posts/post_detail.html'
+    context_object_name = 'post'
+    lookup_url_kwarg = 'post_id'
+    form_class = CommentForm
 
 
 @login_required(login_url='login')
@@ -67,14 +97,32 @@ def post_create_view(request):
         form = PostForm()
         return render(request, 'posts/post_create.html', context={'form': form})
     if request.method == "POST":
-
-        # Post.objects.create(
-        #     image=image,
-        #     title='title',
-        #     content='content',
-        #     rate=3,
-        # )
+        form = PostForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, 'posts/post_create.html', context={'form': form})
+        form.save()
         return redirect('/posts/')
+
+
+class PostCreateView(CreateView):
+    model = Post
+    template_name = 'posts/post_create.html'
+    form_class = PostForm
+    success_url = '/post2/'
+
+
+@login_required(login_url='login')
+def post_update_view(request, post_id):
+    post = Post.objects.get(id=post_id)
+    if request.method == "GET":
+        form = PostUpdateForm(instance=post)
+        return render(request, 'posts/post_update.html', context={'form': form})
+    if request.method == "POST":
+        form = PostUpdateForm(request.POST, request.FILES, instance=post)
+        if not form.is_valid():
+            return render(request, 'posts/post_update.html', context={'form': form})
+        form.save()
+        return redirect('/profile/')
 
     """posts = [post1, post2, post3, post4, post5, post 6, post7, post8, post9, post10, post11, post12
     limit = 3, page = 3

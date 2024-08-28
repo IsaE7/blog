@@ -3,16 +3,29 @@
 
 {% block content %}
 <div class="card" style="width: 18rem;">
-  {% if post.image %}
-  <img src="{{post.image.url}}" class="card-img-top" style="width: 285px; height: 200px" alt="No photo">
-  {% else %}
-  <img src="{%static 'plaseholder.jpg'%}">
-  {% endif %}
-  <div class="card-body">
-    <h5 class="card-title">{{ post.title }}</h5>
-    <p class="card-text">{{ post.content }}</p>
-    <p class="card-text">{{ post.rate }}</p>
-    <a href="#" class="btn btn-primary">go</a>
-  </div>
+    {% if post.image %}
+    <img src="{{post.image.url}}" class="card-img-top" style="width: 285px; height: 200px" alt="No photo">
+    {% else %}
+    <img src="{%static 'plaseholder.jpg'%}">
+    {% endif %}
+    <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text">{{ post.content }}</p>
+        <p class="card-text">{{ post.rate }}</p>
+        {% if post.author == request.user %}
+        <a href="/post/{{post.id}}/update" class="btn btn-primary">update</a>
+        {% endif %}
+        <p></p>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{comment_form.as_p}}
+            <button style="background-color: #0a6ebd" type="submit">add comment</button>
+        </form>
+        <p>Comments</p>
+        {% for comment in comments %}
+        <div class="card" style="width: 18rem; padding-top: 10px;">
+        <h5 class="card-title">{{ comment.text }}</h5>
+        </div>
+    </div>
 </div>
 {% endblock %}

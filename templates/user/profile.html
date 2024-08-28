@@ -1,0 +1,38 @@
+{% extends 'template.html' %}
+{% load static %}
+
+{% block content %}
+<h1>PROFILE</h1>
+<div class="container">
+    <img src="/media/{{ user.profile.image }}" alt="Profile Picture"
+         style="width: 200px; height: 200px; border-radius: 50%;">
+    <h2>{{ user.username }}</h2>
+    <h3>{{ user.first_name }}</h3>
+    <h3>{{ user.last_name }}</h3>
+    <h3>{{ user.email }}</h3>
+    <h3>{{ user.profile.age }}</h3>
+
+    {% for post in posts %}
+    <div class="card" style="width: 18rem;">
+        {% if post.image %}
+        <img src="{{post.image.url}}" class="card-img-top" style="width: 200px; height: 200px" alt="No photo">
+        {% else %}
+        <img src="{%static 'plaseholder.jpg'%}">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <p class="card-text">{{ post.rate }}</p>
+            <a href="/posts/{{post.id}}" class="btn btn-primary">go</a>
+        </div>
+    </div>
+    {% endfor %}
+    <li>
+        <a href="https://www.google.com/imgres?q=cat&imgurl=https%3A%2F%2Fstorage.googleapis.com%2Fpod_public%2F1300%2F151089.jpg&imgrefurl=https%3A%2F%2Fwww.europosters.eu%2Fmarketplace%2Frainbow-cat-v109224&docid=eMQaJ--5AHuMIM&tbnid=xIFlakoPmEFypM&vet=12ahUKEwjzmdew4eWHAxXsIRAIHf0_LFkQM3oECE8QAA..i&w=929&h=1300&hcb=2&ved=2ahUKEwjzmdew4eWHAxXsIRAIHf0_LFkQM3oECE8QAA">CAT</a>
+    </li>
+    <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px">
+        {% for i in max_pages %}
+        <a href="/posts/?page={{i}}" class="btn btn-primary">{{i}}</a>
+        {%endfor%}
+    </div>
+    {% endblock %}
