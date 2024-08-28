@@ -2,6 +2,10 @@
 {% load static %}
 <body>
 {% block content %}
+<form action="/posts/" method="get">
+  {{ search_form.as_p }}
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
 {% for post in posts %}
 <div class="card" style="width: 18rem;">
   {% if post.image %}
@@ -20,5 +24,10 @@
 <li>
     <a href="https://www.google.com/imgres?q=cat&imgurl=https%3A%2F%2Fstorage.googleapis.com%2Fpod_public%2F1300%2F151089.jpg&imgrefurl=https%3A%2F%2Fwww.europosters.eu%2Fmarketplace%2Frainbow-cat-v109224&docid=eMQaJ--5AHuMIM&tbnid=xIFlakoPmEFypM&vet=12ahUKEwjzmdew4eWHAxXsIRAIHf0_LFkQM3oECE8QAA..i&w=929&h=1300&hcb=2&ved=2ahUKEwjzmdew4eWHAxXsIRAIHf0_LFkQM3oECE8QAA">CAT</a>
 </li>
+<div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px">
+  {% for i in max_pages %}
+  <a href="/posts/?page={{i}}" class="btn btn-primary">{{i}}</a>
+  {%endfor%}
+</div>
 {% endblock %}
 </body>

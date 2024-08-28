@@ -1,5 +1,5 @@
 from django import forms
-from posts.models import Post
+from posts.models import Post, Tag
 
 
 class PostForm(forms.ModelForm):
@@ -35,3 +35,32 @@ class PostForm(forms.ModelForm):
                 })
 
         }
+
+
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Search',
+                'class': 'form-control',
+            }))
+    tags = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+    orderings = (
+        ('title', 'по заголовку'),
+        ('-title', 'в обратном порядке'),
+        ('rate', 'по рейтингу'),
+        ('-rate', 'в обратном порядке'),
+        ('-created_at', 'по дате создания в обратном'),
+        ('created_at', 'по дате создания'),
+    )
+    orderings = forms.ChoiceField(
+        required=False,
+        choices=orderings,
+        widget=forms.Select(attrs={'placeholder': 'Ordering', 'class': 'form-control'})
+
+    )
